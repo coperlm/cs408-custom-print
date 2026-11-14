@@ -1,0 +1,42 @@
+name: Deploy static question bank to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble static site
+        run: |
+          mkdir -p _site/data _site/assets/2022
+          cp index.html app.js styles.css _site/
+          cp -r data/questions _site/data/
+          cp data/bank-meta.json _site/data/
+          cp '题库图片/2022/2022-01.jpg' _site/assets/2022/
+          cp '题库图片/2022/2022-11.jpg' _site/assets/2022/
+          sed -i 's#题库图片/2022/#assets/2022/#g' _site/data/questions/2022.json
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="按年份和题号选择计算机 408 真题，生成可打印试卷。">
+  <title>408 真题组卷</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./">408 <span>真题组卷</span></a>
+    <span class="edition">2009–2026 · 文字版</span>
+  </header>
+  <main>
+    <section class="composer" aria-labelledby="composer-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">CUSTOM PAPER</p>
+          <h1 id="composer-title">选择题目</h1>
+        </div>
+        <span id="bank-count" class="muted">正在载入题库…</span>
+      </div>
+      <label class="input-label" for="selection">年份与题号</label>
+      <textarea id="selection" rows="3" spellcheck="false" aria-describedby="syntax-help">2022:1-5,11,41-42</textarea>
+      <div class="input-footer">
+        <p id="syntax-help">格式：<code>年份:题号范围</code>；多个年份用分号分隔。例：<code>2009:1-5,12;2022:1,11,41-42;2026:all</code></p>
+        <button id="build-paper" class="primary-button" type="button">生成试卷</button>
+      </div>
+      <p id="error-message" class="error" role="alert" hidden></p>
+    </section>
+
+    <section class="paper-toolbar" aria-label="试卷操作">
+      <div>
+        <h2>试卷预览</h2>
+        <span id="selection-count" class="muted">尚未生成</span>
+      </div>
+      <div class="toolbar-actions">
+        <button id="copy-link" class="icon-button" type="button" title="复制当前组卷链接" aria-label="复制当前组卷链接">複</button>
+        <button id="print-paper" class="primary-button" type="button" disabled>打印 / 导出 PDF</button>
+      </div>
+    </section>
+    <div id="paper" class="paper" aria-live="polite">
+      <div class="empty-state">
+        <span class="empty-mark">408</span>
+        <p>输入年份和题号，生成自定义试卷。</p>
+      </div>
+    </div>
+    <footer class="footer-note">文字整理版；图片题请以原始试卷核对。打印时在浏览器打印对话框中选择“另存为 PDF”。</footer>
+  </main>
+</body>
+</html>
