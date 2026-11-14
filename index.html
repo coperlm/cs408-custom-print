@@ -23,12 +23,24 @@
         <span id="bank-count" class="muted">正在载入题库…</span>
       </div>
       <label class="input-label" for="selection">年份与题号</label>
-      <textarea id="selection" rows="3" spellcheck="false" aria-describedby="syntax-help">2022:1-5,11,41-42</textarea>
+      <textarea id="selection" rows="4" spellcheck="false" aria-describedby="syntax-help">2022 1 2 7 11
+2024 4 33 35</textarea>
       <div class="input-footer">
-        <p id="syntax-help">格式：<code>年份:题号范围</code>；多个年份用分号分隔。例：<code>2009:1-5,12;2022:1,11,41-42;2026:all</code></p>
+        <p id="syntax-help">每行格式：<code>年份 题号 题号…</code>，题号只支持 1–40；逗号和空格均可分隔。例：<code>2022 1 2 7 11</code></p>
         <button id="build-paper" class="primary-button" type="button">生成试卷</button>
       </div>
       <p id="error-message" class="error" role="alert" hidden></p>
+    </section>
+    <section class="ai-panel" aria-labelledby="ai-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">IMAGE AI PROMPT</p>
+          <h2 id="ai-title">识图 AI 请求文本</h2>
+        </div>
+        <button id="copy-ai-prompt" class="secondary-button" type="button">复制请求文本</button>
+      </div>
+      <textarea id="ai-prompt" rows="7" readonly aria-label="识图 AI 请求文本"></textarea>
+      <p class="panel-help">把这段文字和原题图片一起发送给 DeepSeek、豆包等支持识图的 AI，可要求输出指定格式。</p>
     </section>
 
     <section class="paper-toolbar" aria-label="试卷操作">
@@ -37,8 +49,8 @@
         <span id="selection-count" class="muted">尚未生成</span>
       </div>
       <div class="toolbar-actions">
-        <button id="copy-link" class="icon-button" type="button" title="复制当前组卷链接" aria-label="复制当前组卷链接">複</button>
-        <button id="print-paper" class="primary-button" type="button" disabled>打印 / 导出 PDF</button>
+        <button id="copy-link" class="icon-button" type="button" title="复制当前题目链接" aria-label="复制当前题目链接">链</button>
+        <button id="print-paper" class="primary-button" type="button" disabled>下载 A4 PDF</button>
       </div>
     </section>
     <div id="paper" class="paper" aria-live="polite">
@@ -47,7 +59,7 @@
         <p>输入年份和题号，生成自定义试卷。</p>
       </div>
     </div>
-    <footer class="footer-note">文字整理版；图片题请以原始试卷核对。打印时在浏览器打印对话框中选择“另存为 PDF”。</footer>
+    <footer class="footer-note">题目文字以原始试卷为准；图表题会嵌入原卷页图。答案链接使用短题目编号。</footer>
   </main>
 </body>
 </html>

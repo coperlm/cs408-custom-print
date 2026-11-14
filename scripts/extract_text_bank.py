@@ -24,15 +24,15 @@ def extract_year(year: int) -> list[dict[str, object]]:
         if match and int(match.group(1)) == expected:
             starts[expected] = index
             expected += 1
-            if expected == 48:
+            if expected == 41:
                 break
-    if expected != 48:
-        raise ValueError(f"{year}: found sequential question headings 1-{expected - 1}, expected 1-47")
+    if expected != 41:
+        raise ValueError(f"{year}: found sequential question headings 1-{expected - 1}, expected 1-40")
 
     questions: list[dict[str, object]] = []
-    for number in range(1, 48):
+    for number in range(1, 41):
         start = starts[number]
-        end = starts[number + 1] if number < 47 else len(lines)
+        end = starts[number + 1] if number < 40 else next((i for i in range(start + 1, len(lines)) if re.match(r"^\s{0,4}41[.．、]\s*", lines[i])), len(lines))
         body = "\n".join(line.rstrip() for line in lines[start:end]).strip()
         body = re.sub(r"\n{3,}", "\n\n", body)
         body = re.sub(r"(?m)^.*\d+ 年全国硕士研究生入学统一考试.*第\s*\d+\s*页.*$", "", body)
@@ -40,12 +40,13 @@ def extract_year(year: int) -> list[dict[str, object]]:
             "id": f"q-{year}-{number:02d}",
             "year": year,
             "number": number,
-            "subject": "ds" if number <= 11 or 41 <= number <= 42 else "co" if number <= 22 or number <= 44 else "os" if number <= 32 or number <= 46 else "cn",
-            "type": "single" if number <= 40 else "application",
+            "subject": "ds" if number <= 11 else "co" if number <= 22 else "os" if number <= 32 else "cn",
+            "type": "single",
             "text": body,
             "source": "neville-studio/408-exam-paper",
-            "sourcePage": None,
-            "image": None,
+            "answer": None,
+            "explanation": None,
+            "sourceImage": None,
             "verification": "source-text-unverified",
         }
         if year == 2022 and number == 1:
@@ -59,7 +60,6 @@ def extract_year(year: int) -> list[dict[str, object]]:
             )
             question["source"] = "user-provided-original-pdf"
             question["sourcePage"] = 110
-            question["image"] = None
             question["verification"] = "checked-against-original-pdf"
         elif year == 2022 and number == 11:
             question["text"] = (
@@ -70,9 +70,8 @@ def extract_year(year: int) -> list[dict[str, object]]:
             )
             question["source"] = "user-provided-original-pdf"
             question["sourcePage"] = 111
-            question["image"] = None
             question["verification"] = "checked-against-original-pdf"
-        elif "下图" in body or "如图" in body or "见图" in body or "如下表" in body or "下表" in body:
+        elif re.search(r"如下图|下图|右图|左图|如图|见图|图中|题图|拓扑|波形|如下表|下表|见下表|表中|图\s*[（(]?\d+", body):
             question["verification"] = "image-or-table-needs-review"
         questions.append(question)
     return questions
@@ -89,8 +88,9 @@ def main() -> None:
         total += len(questions)
     metadata = {
         "years": list(range(2009, 2027)),
-        "questionsPerYear": 47,
+        "questionsPerYear": 40,
         "questions": total,
+        "questionType": "single-choice",
         "source": "neville-studio/408-exam-paper",
     }
     (ROOT / "data" / "bank-meta.json").write_text(

@@ -19,7 +19,8 @@
     2025,
     2026
   ],
-  "questionsPerYear": 47,
-  "questions": 846,
+  "questionsPerYear": 40,
+  "questions": 720,
+  "questionType": "single-choice",
   "source": "neville-studio/408-exam-paper"
 }

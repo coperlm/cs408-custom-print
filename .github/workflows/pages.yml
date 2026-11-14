@@ -21,13 +21,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Assemble static site
         run: |
-          mkdir -p _site/data _site/assets/2022
+          mkdir -p _site/data _site/assets/question-images
           cp index.html app.js styles.css _site/
           cp -r data/questions _site/data/
           cp data/bank-meta.json _site/data/
-          cp '题库图片/2022/2022-01.jpg' _site/assets/2022/
-          cp '题库图片/2022/2022-11.jpg' _site/assets/2022/
-          sed -i 's#题库图片/2022/#assets/2022/#g' _site/data/questions/2022.json
+          cp data/question-image-map.json _site/data/
+          cp -r data/question-images/. _site/assets/question-images/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

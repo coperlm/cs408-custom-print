@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check generated 408 question-bank files for complete, unique IDs."""
+"""Check generated single-choice question files and image references."""
 
 import json
 import sys
@@ -19,8 +19,8 @@ for year in range(2009, 2027):
         errors.append(f"{year}: cannot load JSON: {error}")
         continue
     numbers = [question.get("number") for question in questions]
-    if numbers != list(range(1, 48)):
-        errors.append(f"{year}: expected question numbers 1-47, got {numbers}")
+    if numbers != list(range(1, 41)):
+        errors.append(f"{year}: expected question numbers 1-40, got {numbers}")
     for question in questions:
         question_id = question.get("id")
         if question_id in seen:
@@ -28,9 +28,14 @@ for year in range(2009, 2027):
         seen.add(question_id)
         if not question.get("text", "").strip():
             errors.append(f"{question_id}: empty text")
+        image = question.get("sourceImage")
+        if image:
+            relative = image.removeprefix("assets/question-images/")
+            if not (ROOT / "data" / "question-images" / relative).is_file():
+                errors.append(f"{question_id}: missing source image {image}")
     total += len(questions)
 
 if errors:
     print("\n".join(errors), file=sys.stderr)
     raise SystemExit(1)
-print(f"OK: {total} questions, {len(seen)} unique IDs, years 2009-2026")
+print(f"OK: {total} single-choice questions, {len(seen)} unique IDs, years 2009-2026")
