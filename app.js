@@ -87,11 +87,15 @@ function renderQuestion(question) {
   const article = document.createElement('article');
   article.className = question.sourceImage ? 'question image-question' : 'question';
   if (question.sourceImage) {
+    const heading = document.createElement('div');
+    heading.className = 'question-heading';
+    heading.append(textNode('span', 'question-id', `${question.year} · ${String(question.number).padStart(2, '0')}`));
+    heading.append(textNode('span', 'question-type', '单项选择题'));
     const image = document.createElement('img');
     image.src = new URL(question.sourceImage, document.baseURI).href;
     image.alt = `${question.year} 年第 ${question.number} 题原卷图像，来源 PDF 第 ${question.sourcePage} 页`;
     image.loading = 'eager';
-    article.append(image);
+    article.append(heading, image);
     return article;
   }
   const heading = document.createElement('div');
