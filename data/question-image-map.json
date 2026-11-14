@@ -428,8 +428,9 @@
   {
     "id": "q-2025-11",
     "sourcePage": 138,
-    "confidence": 0.742,
-    "crop": "2025-11.jpg"
+    "confidence": 1.0,
+    "crop": "2025-11.jpg",
+    "method": "manual-boundary"
   },
   {
     "id": "q-2025-33",
@@ -478,12 +479,5 @@
     "sourcePage": 150,
     "confidence": 0.908,
     "crop": "2026-37.jpg"
-  },
-  {
-    "id": "q-2025-11",
-    "sourcePage": 138,
-    "confidence": 1.0,
-    "crop": "2025-11.jpg",
-    "method": "manual-boundary"
   }
 ]
