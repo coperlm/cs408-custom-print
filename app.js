@@ -85,28 +85,29 @@ function textNode(tag, className, text) {
 
 function renderQuestion(question) {
   const article = document.createElement('article');
-  article.className = 'question';
+  article.className = question.sourceImage ? 'question image-question' : 'question';
+  if (question.sourceImage) {
+    const image = document.createElement('img');
+    image.src = new URL(question.sourceImage, document.baseURI).href;
+    image.alt = `${question.year} 年第 ${question.number} 题原卷图像，来源 PDF 第 ${question.sourcePage} 页`;
+    image.loading = 'eager';
+    article.append(image);
+    return article;
+  }
   const heading = document.createElement('div');
   heading.className = 'question-heading';
   heading.append(textNode('span', 'question-id', `${question.year} · ${String(question.number).padStart(2, '0')}`));
   heading.append(textNode('span', 'question-type', '单项选择题'));
   const body = textNode('div', 'question-body', question.text);
-  if (question.sourceImage) {
-    const image = document.createElement('img');
-    image.src = new URL(question.sourceImage, document.baseURI).href;
-    image.alt = `${question.year} 年第 ${question.number} 题原卷图表，来源 PDF 第 ${question.sourcePage} 页`;
-    image.loading = 'eager';
-    body.append(image);
-  } else if (question.verification === 'image-or-table-needs-review') {
+  if (question.verification === 'image-or-table-needs-review') {
     body.append(textNode('p', 'review-note', '原卷页图尚未匹配；当前显示文字版，需人工复核。'));
   }
   article.append(heading, body);
   return article;
 }
 
-function createAiPrompt(selection) {
-  const ids = selection.map(({ year, number }) => `${year}-${String(number).padStart(2, '0')}`);
-  return `请识别我附上的计算机 408 真题图片，只处理以下题号：${ids.join('、')}。\n\n要求：\n1. 按原卷逐字转录题干、代码、公式、表格和所有选项；图表请描述关键节点、连线、数值、坐标或表格单元。\n2. 不要补写答案或解析，不确定处写 [待核对]，不要猜测。\n3. 严格输出 JSON 数组，每项格式如下：\n{"year":2022,"number":1,"type":"single","question":"题干","code":null,"options":["A. ...","B. ...","C. ...","D. ..."],"figure_description":null,"uncertain_spans":[]}\n4. 综合题以完整题干和各小问记录，options 设为 []。\n5. 输出中不得包含未请求的题目。`;
+function createAiPrompt() {
+  return `请只识别我附图中手写标注的计算机 408 年份和题号，并转换成可直接粘贴到本网站“年份与题号”输入框的纯文本。不要识别题目内容，不要答题或解析。\n\n严格格式：每年一行，先写四位年份，后写题号，用逗号分隔。例如：\n2022 1,2,7,11\n2024 4,33,35\n\n只保留 2009–2026 年的单项选择题号 1–40。看不清的编号直接省略，不要猜测；不要输出 Markdown 围栏、解释、答案或其他文字。`;
 }
 
 function updateShareUrl(selection) {
@@ -137,7 +138,7 @@ async function buildPaper() {
     paper.append(title);
     for (const question of selected) paper.append(renderQuestion(question));
     document.querySelector('#selection-count').textContent = `已选 ${selected.length} 题 · ${years.length} 个年份`;
-    document.querySelector('#ai-prompt').value = createAiPrompt(selection);
+    document.querySelector('#ai-prompt').value = createAiPrompt();
     printButton.disabled = false;
     updateShareUrl(selection);
   } catch (error) {
@@ -187,7 +188,7 @@ document.querySelector('#selection').addEventListener('input', () => {
   printButton.disabled = true;
 });
 
-document.querySelector('#ai-prompt').value = createAiPrompt([]);
+document.querySelector('#ai-prompt').value = createAiPrompt();
 (async function initialize() {
   try {
     const response = await fetch(new URL('data/bank-meta.json', document.baseURI));
